@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+<title>HACKING BOT BD</title>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap');
+        :root { 
+            --glass: rgba(255,255,255,0.55);
+            --border: rgba(180,0,255,0.25);
+            --neon-cyan: #0099ff;
+            --neon-violet: #7c00ff;
+            --cyber-lime: #00c853;
+            --deep-dark: #ffffff;
+            --electric-pink: #ff0066;
+            --txt-dark: #1a1a2e;
+            --accent-orange: #ff6600;
+            --accent-yellow: #ffcc00;
+        }
+
+        @keyframes blockFloat1 {
+            0%, 100% { transform: translateY(0px) scale(1); opacity: 0.55; }
+            50% { transform: translateY(-40px) scale(1.08); opacity: 0.9; }
+        }
+        @keyframes blockFloat2 {
+            0%, 100% { transform: translateX(0px) scale(1); opacity: 0.5; }
+            50% { transform: translateX(35px) scale(1.1); opacity: 0.85; }
+        }
+        @keyframes blockFloat3 {
+            0%, 100% { transform: translate(0,0) scale(1); opacity: 0.4; }
+            50% { transform: translate(-25px, 30px) scale(1.05); opacity: 0.75; }
+        }
+        @keyframes blockFloat4 {
+            0%, 100% { transform: translate(0,0) rotate(0deg); opacity: 0.45; }
+            50% { transform: translate(20px,-20px) rotate(8deg); opacity: 0.8; }
+        }
+        @keyframes spinOrbit {
+            0%   { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes spinOrbitReverse {
+            0%   { transform: rotate(360deg); }
+            100% { transform: rotate(0deg); }
+        }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 12px rgba(124,0,255,0.4), 0 0 24px rgba(0,153,255,0.25); }
+            50% { box-shadow: 0 0 20px rgba(0,200,83,0.5), 0 0 40px rgba(124,0,255,0.3); }
+        }
+
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background: #f0f4ff;
+            color: var(--txt-dark);
+            overflow-x: hidden;
+            user-select: none;
+            position: relative;
+        }
+
+        .bg-block {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            pointer-events: none;
+        }
+        .bg-block-1 {
+            width: 420px; height: 420px;
+            top: -100px; left: -120px;
+            background: radial-gradient(circle, #c084fccc, #f0abfc66);
+            animation: blockFloat1 7s ease-in-out infinite;
+        }
+        .bg-block-2 {
+            width: 350px; height: 350px;
+            top: 30%; right: -100px;
+            background: radial-gradient(circle, #60c8ffaa, #3b82f666);
+            animation: blockFloat2 9s ease-in-out infinite;
+        }
+        .bg-block-3 {
+            width: 300px; height: 300px;
+            bottom: 10%; left: 10%;
+            background: radial-gradient(circle, #86efac99, #34d39966);
+            animation: blockFloat3 11s ease-in-out infinite;
+        }
+        .bg-block-4 {
+            width: 250px; height: 250px;
+            bottom: -80px; right: 20%;
+            background: radial-gradient(circle, #fca5a5bb, #fb923c55);
+            animation: blockFloat4 8s ease-in-out infinite;
+        }
+        .bg-block-5 {
+            width: 200px; height: 200px;
+            top: 50%; left: 40%;
+            background: radial-gradient(circle, #fde04755, #fbbf2466);
+            animation: blockFloat1 13s ease-in-out infinite reverse;
+        }
+
+        .app-frame { 
+            max-width: 480px; 
+            margin: 0 auto; 
+            padding: 15px; 
+        }
+        
+        .glass-card {
+            background: rgba(255,255,255,0.72);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: 1.8px solid rgba(0,0,0,0.22);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(90deg, #7c00ff, #0099ff, #00c853, #ff6600, #ff0066) 1;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+        .header span:first-child {
+            color: var(--txt-dark);
+            font-weight: 900;
+            letter-spacing: 3px;
+            font-family: 'Orbitron', monospace;
+        }
+        .header span:last-child {
+            color: var(--neon-violet);
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .pred-val {
+            font-size: 70px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #7c00ff, #0099ff, #00c853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 10px 0;
+            font-family: 'Orbitron', monospace;
+            filter: drop-shadow(0 2px 12px rgba(124,0,255,0.3));
+        }
+        .timer-display {
+            font-size: 30px;
+            font-weight: 900;
+            font-family: 'Orbitron', monospace;
+            color: #00c853;
+            letter-spacing: 4px;
+            text-shadow: 0 2px 12px rgba(0,200,83,0.3);
+        }
+        .status-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: #0099ff;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .strat-mode {
+            font-size: 10px;
+            background: linear-gradient(90deg, rgba(124,0,255,0.12), rgba(0,153,255,0.12));
+            padding: 5px 16px;
+            border-radius: 30px;
+            color: #7c00ff;
+            border: 1.5px solid rgba(124,0,255,0.3);
+            margin-bottom: 12px;
+            display: inline-block;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .lvl-badge {
+            background: linear-gradient(90deg, rgba(124,0,255,0.1), rgba(0,153,255,0.1), rgba(0,200,83,0.1));
+            border: 1.5px solid rgba(124,0,255,0.25);
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 700;
+            margin: 15px 0;
+            font-size: 13px;
+            color: var(--txt-dark);
+            box-shadow: 0 2px 12px rgba(124,0,255,0.12);
+        }
+        .num-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .num-circle-wrap {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .num-circle-wrap::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: #0099ff;
+            border-right-color: #ff0066;
+            animation: spinOrbit 1.6s linear infinite;
+        }
+        .num-circle-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-bottom-color: #00c853;
+            border-left-color: #7c00ff;
+            animation: spinOrbitReverse 2.4s linear infinite;
+        }
+        .num-circle {
+            width: 48px;
+            height: 48px;
+            line-height: 48px;
+            border-radius: 50%;
+            font-weight: 900;
+            background: rgba(0,0,0,0.75);
+            color: #7c00ff;
+            font-size: 22px;
+            text-align: center;
+            animation: pulseGlow 2s ease-in-out infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-clear {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(90deg, #ff2a5e, #b030b0);
+            border: none;
+            border-radius: 40px;
+            color: white;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 42, 94, 0.6);
+            text-transform: uppercase;
+            font-size: 11px;
+            margin-top: 10px;
+        }
+        .btn-clear:hover {
+            background: linear-gradient(90deg, #ff1a4f, #9f1f9f);
+        }
+
+        .history-wrap {
+            max-height: 400px;
+            overflow-y: auto;
+            border-radius: 16px;
+            padding-right: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        th {
+            color: #7c00ff;
+            padding: 10px 4px;
+            border-bottom: 2px solid rgba(124,0,255,0.3);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        td {
+            padding: 8px 4px;
+            border-bottom: 1px solid rgba(124,0,255,0.08);
+            text-align: center;
+        }
+        .win {
+            color: #00a63e;
+            font-weight: 800;
+        }
+        .loss {
+            color: #dc2626;
+            font-weight: 800;
+        }
+        .hidden {
+            display: none !important;
+        }
+        
+        /* Tiny loading removed */
+        #pID {
+            color: #0099ff;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .expiry-warning {
+            color: #ff2a5e;
+            font-size: 13px;
+            margin: 15px 0 5px;
+            font-weight: 600;
+            background: rgba(255,0,100,0.15);
+            padding: 8px;
+            border-radius: 30px;
+            border-left: 4px solid #ff2a5e;
+            text-align: center;
+        }
+        
+        /* Intro screen fully erased, main visible from start */
+        .engine-badge {
+            font-size: 9px;
+            text-align: center;
+            margin-top: 5px;
+            color: #7c00ff;
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+<!-- Animated color blocks -->
+<div class="bg-block bg-block-1"></div>
+<div class="bg-block bg-block-2"></div>
+<div class="bg-block bg-block-3"></div>
+<div class="bg-block bg-block-4"></div>
+<div class="bg-block bg-block-5"></div>
+<div id="mainWrapper">
+<div class="app-frame">
+<div class="header"><span style="font-size: 28px; color: var(--neon-cyan); font-weight: 800; letter-spacing: 3px;">HACKING BOT BD</span></div>
+<!-- Hack Section: Prediction Engine (always visible) -->
+<div id="hackSection">
+<div class="status-info">
+<span>🔗 SERVER: CYBERLINK</span>
+<span id="pingVal">PING: 12MS</span>
+</div>
+<!-- Expiry timer removed, but keeping style for consistency -->
+<div class="expiry-warning hidden" id="expiryDisplay"></div>
+<div class="glass-card" style="text-align: center;">
+<div class="strat-mode" id="stratDisplay">MODE: TGX OWNER SCAN</div>
+<div class="timer-display" id="timer">00:60</div>
+<div id="pID" style="margin-bottom: 6px;">PERIOD: ---</div>
+<div class="pred-val" id="pRes">INIT</div>
+<div class="lvl-badge" id="mLevel">MARTINGALE: LEVEL 1 (1X)</div>
+<div style="font-size: 11px; color: var(--cyber-lime); margin-bottom: 5px;">⟁ OPPOSITE NUMBERS ⟁</div>
+<div class="num-row" id="numRow">
+<div class="num-circle-wrap"><div class="num-circle">?</div></div>
+<div class="num-circle-wrap"><div class="num-circle">?</div></div>
+</div>
+</div>
+<div class="glass-card">
+<div style="font-size: 12px; color: var(--neon-cyan); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
+<span>🌀 HISTORY
+ DK WIN BD HACK </span>
+<button class="btn-clear" onclick="clearHistory()"> CLEAR LOG</button>
+</div>
+<div class="history-wrap">
+<table>
+<thead>
+<tr><th>PERIOD</th><th>PRED</th><th>RESULT</th><th>STATUS</th></tr>
+</thead>
+<tbody id="logs"></tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="engine-badge">⚡ HACKING BOT BD ENGINE v2 | LIVE PREDICTION ⚡</div>
+</div>
+<script>
+    // ======================== DIRECT ENGINE - NO LOGIN, NO SPLASH ========================
+    // Firebase Config (keeping for potential future but NOT used for login)
+    const firebaseConfig = {
+        databaseURL: "https://python-script-42d50-default-rtdb.firebaseio.com"
+    };
+    // Initialize Firebase only if not already (safe)
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+    
+    // API for draw data
+    const API = "https://draw.ar-lottery01.com/WinGo/WinGo_30S/GetHistoryIssuePage.json";
+    let lastP = null, nextP = null, targetNums = [], currentLevel = 1;
+    let historyLogs = [];
+    let syncInterval = null;
+    let clockInterval = null;
+
+    // Audio elements (lightweight)
+    const sWin = new Audio('https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3');
+    const sLoss = new Audio('https://assets.mixkit.co/active_storage/sfx/951/951-preview.mp3');
+    const sDing = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+    // Preload and mute errors
+    [sWin, sLoss, sDing].forEach(a => { a.volume = 0.5; a.load(); });
+
+    // Startup: no intro, no key validation, direct engine activation
+    window.onload = () => {
+        // Instantly show hack section (already visible)
+        startEngine();
+    };
+
+    function startEngine() {
+        // start prediction cycle
+        syncEngine();
+        // refresh every 2 seconds for new data
+        if (syncInterval) clearInterval(syncInterval);
+        syncInterval = setInterval(syncEngine, 2000);
+        startClock();
+        
+        // optional: dynamic ping simulation (cosmetic)
+        setInterval(() => {
+            const pingSpan = document.getElementById('pingVal');
+            if (pingSpan) {
+                const fakePing = Math.floor(Math.random() * 8 + 8);
+                pingSpan.innerText = `PING: ${fakePing}MS`;
+            }
+        }, 5000);
+    }
+
+    function startClock() {
+        if (clockInterval) clearInterval(clockInterval);
+        clockInterval = setInterval(() => {
+            const timerDiv = document.getElementById('timer');
+            if (!timerDiv) return;
+            // API is 30S cycle — use seconds mod 30 for correct countdown
+            const nowSec = new Date().getSeconds();
+            const rem = 30 - (nowSec % 30);
+            const displaySec = rem < 10 ? '0' + rem : rem;
+            timerDiv.innerText = `00:${displaySec}`;
+            if (rem === 5) {
+                sDing.play().catch(e => console.log("audio blocked"));
+            }
+            timerDiv.style.color = rem <= 5 ? "#ff2a5e" : (rem <= 10 ? "#ff8800" : "#00cc44");
+        }, 1000);
+    }
+
+    async function syncEngine() {
+        try {
+            const r = await fetch(API + '?t=' + Date.now());
+            const d = await r.json();
+            if (!d || !d.data || !d.data.list || !d.data.list.length) return;
+            const top = d.data.list[0];
+            const issueNumber = top.issueNumber;
+            const rawNumber = parseInt(top.number);
+            if (isNaN(rawNumber)) return;
+            processHybrid(issueNumber, rawNumber, d.data.list);
+        } catch (e) {
+            console.warn("API sync error", e);
+        }
+    }
+
+    function processHybrid(p, num, list) {
+        const actualLabel = num >= 5 ? "BIG" : "SMALL";
+        const actualDisplay = `${actualLabel}(${num})`;
+        
+        // If new period arrived and we had a prediction
+        if (lastP !== null && lastP !== p && nextP !== null) {
+            // Determine win condition: match BIG/SMALL prediction OR hit specific numbers (targetNums)
+            const isWin = (nextP === actualLabel) || targetNums.includes(num);
+            
+            // Play sound & adjust martingale level
+            if (isWin) {
+                sWin.play().catch(()=>{});
+                currentLevel = 1;   // reset on win
+            } else {
+                sLoss.play().catch(()=>{});
+                currentLevel++;
+                if (currentLevel > 4) currentLevel = 1; // cap at level 4
+            }
+            
+            // Multiplier text
+            let multiplier = "1X";
+            if (currentLevel === 2) multiplier = "3X";
+            else if (currentLevel === 3) multiplier = "9X";
+            else if (currentLevel === 4) multiplier = "27X";
+            document.getElementById('mLevel').innerText = `MARTINGALE: LEVEL ${currentLevel} (${multiplier})`;
+            
+            // Create history entry
+            const shortPeriod = p.slice(-3);
+            const entry = {
+                period: shortPeriod,
+                pred: nextP,
+                result: actualDisplay,
+                status: isWin ? 'WIN' : 'LOSS',
+                winClass: isWin ? 'win' : 'loss'
+            };
+            
+            historyLogs.unshift(entry);
+            if (historyLogs.length > 100) historyLogs = historyLogs.slice(0, 100);
+            
+            // Render new log row at top
+            const row = `<tr><td>${entry.period}</td><td>${entry.pred}</td><td>${entry.result}</td><td class="${entry.winClass}">${entry.status}</td></tr>`;
+            const logsContainer = document.getElementById('logs');
+            logsContainer.innerHTML = row + logsContainer.innerHTML;
+        }
+        
+        // Update last period
+        lastP = p;
+        
+        // ----- Strategy engine: predict next outcome based on last 5 results -----
+        const last5Items = list.slice(0, 5).map(x => parseInt(x.number) >= 5 ? "BIG" : "SMALL");
+        const last5Nums = list.slice(0, 5).map(x => parseInt(x.number));
+        const stratDisplay = document.getElementById('stratDisplay');
+        
+        // DRAGON PULSE: if first three consecutive same pattern
+        if (last5Items[0] === last5Items[1] && last5Items[1] === last5Items[2]) {
+            nextP = last5Items[0];
+            stratDisplay.innerText = "MODE: DRAGON PULSE";
+        } else {
+            // NEURAL REVERSE: opposite of latest
+            nextP = (last5Items[0] === "BIG") ? "SMALL" : "BIG";
+            stratDisplay.innerText = "MODE: NEURAL REVERSE";
+        }
+        
+        // Compute sum of last 5 numbers for target number logic
+        const sumLast5 = last5Nums.reduce((a,b) => a + b, 0);
+        // Enhanced target numbers based on sum and direction
+        if (nextP === "BIG") {
+            targetNums = (sumLast5 > 20) ? [0, 2] : [1, 3];
+        } else {
+            targetNums = (sumLast5 < 25) ? [7, 9] : [6, 8];
+        }
+        
+        // Update UI
+        const nextPeriod = (BigInt(p) + 1n).toString();
+        document.getElementById('pID').innerText = `PERIOD: ${nextPeriod}`;
+        document.getElementById('pRes').innerText = nextP;
+        document.getElementById('pRes').style.color = (nextP === "BIG") ? "#00ffff" : "#ccff00";
+        
+        // Update number circles
+        const numRowDiv = document.getElementById('numRow');
+        numRowDiv.innerHTML = `<div class="num-circle-wrap"><div class="num-circle">${targetNums[0]}</div></div><div class="num-circle-wrap"><div class="num-circle">${targetNums[1]}</div></div>`;
+    }
+
+    function clearHistory() {
+        historyLogs = [];
+        document.getElementById('logs').innerHTML = '';
+        // Optional subtle haptic (no alert)
+    }
+    
+    // Edge: if for some reason the element doesn't exist, fallback safety
+    window.clearHistory = clearHistory;
+    
+    // Disable any leftover key expiry or login references
+    // completely removed all login remnants
+    
+    // No expiry timer, no validation, no intro
+    console.log("TGX PRO ENGINE ACTIVE — LOGIN REMOVED");
+
+    // ====== TITLE PROTECTION — HACKING BOT BD ======
+    const PROTECTED_TITLE = "HACKING BOT BD";
+
+    // Lock title immediately
+    document.title = PROTECTED_TITLE;
+
+    // MutationObserver — watches <title> tag for any DOM change
+    const titleObserver = new MutationObserver(() => {
+        if (document.title !== PROTECTED_TITLE) {
+            document.title = PROTECTED_TITLE;
+        }
+    });
+    titleObserver.observe(
+        document.querySelector('title'),
+        { childList: true, characterData: true, subtree: true }
+    );
+
+    // Also lock header text in DOM — watch for any innerHTML change
+    const headerObserver = new MutationObserver(() => {
+        const h = document.querySelector('.header');
+        if (!h) return;
+        const heading = h.querySelector('span');
+        if (heading && heading.textContent.trim() !== 'HACKING BOT BD') {
+            heading.textContent = 'HACKING BOT BD';
+        }
+    });
+    const headerEl = document.querySelector('.header');
+    if (headerEl) {
+        headerObserver.observe(headerEl, { childList: true, subtree: true, characterData: true });
+    }
+
+    // Interval double-lock every 2 seconds as backup
+    setInterval(() => {
+        document.title = PROTECTED_TITLE;
+    }, 2000);
+    // ====== END TITLE PROTECTION ======
+    
+    // In case there is any hidden loginSection in legacy, ensure it's gone (DOM doesn't have it)
+    // But also check if any stray element? the original HTML only has hackSection now.
+    // Ensure mainWrapper visible, no fade.
+    document.body.style.background = "#f0f4ff";
+    
+    // Preload first data quickly after 300ms for smooth experience
+    setTimeout(() => {
+        syncEngine();
+    }, 300);
+    
+    // Add live clock for next period countdown + optional auto-clean
+    // also add performance tweak
+    if ('serviceWorker' in navigator) {
+        // optional, ignore
+    }
+    
+    // periodic refresh for stats (ensure stability)
+    setInterval(() => {
+        // just to keep connection alive and update potential UI glitch
+        const now = new Date();
+        if (now.getSeconds() === 0) {
+            // extra sync on minute edge
+            syncEngine();
+        }
+    }, 15000);
+    
+    // Remove any leftover background/intro elements dynamically (in case hidden remnants)
+    const possibleIntro = document.getElementById('introScreen');
+    if (possibleIntro) possibleIntro.remove();
+    
+    // Force remove loginSection if present (just in case of duplicate)
+    const loginDiv = document.getElementById('loginSection');
+    if (loginDiv) loginDiv.remove();
+    
+    // Ensure hackSection is always shown
+    const hack = document.getElementById('hackSection');
+    if (hack) hack.classList.remove('hidden');
+    
+    // make timer consistent at start
+    const initialRem = 60 - new Date().getSeconds();
+    const initNow = new Date().getSeconds(); const initRem = 30 - (initNow % 30); document.getElementById('timer').innerText = `00:${initRem < 10 ? '0'+initRem : initRem}`;
+</script>
+</body>
+</html>
+<!-- Disable Ctrl+S -->
+<script>
+        document.addEventListener('keydown', function(event) {
+            if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+                event.preventDefault();
+            }
+        });
+        </script>
+<!-- Aditional JavaScript -->
+<script>
+        // KEEP ADDING JAVASCRIPT HERE
+        </script>
